@@ -16,5 +16,12 @@ PHP Course Access RESTful API
 1. Apache httpd.conf
     * Listen 80 (port can be modified)
 
+## Paths
+* http://localhost/api.php/generatedkeys/[id]
+    * Example output: ```{"ID":1,"GeneratedPassword":"asfewwerdsf","StartTimeStamp":"2018-05-10 10:52:22","ExpirationTimeStamp":"2018-05-31 00:00:00"}```
+* http://localhost/api.php/post
+    * Required fields: "password=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
+    * Example output: ```{"success":"true"}```
+
 # Version
 - 0.0.1
