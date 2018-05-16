@@ -89,16 +89,38 @@
 
 			return $key;
 		}
+		
+		public static function IsPasswordValid($password)
+		{
+			$db = self::GetInstance();
+			$sql = "SELECT `ID` FROM `generatedkeys` WHERE `GeneratedPassword` = ? AND NOW() BETWEEN `StartTimeStamp` AND `ExpirationTimeStamp`";
+			$key = null;
+
+			$stmt = $db->prepare($sql);
+			$stmt->bind_param('s', $password);
+
+			if ($stmt->execute()) {
+				$stmt->bind_result($key['ID']);
+
+				if (!$stmt->fetch())
+					$key = null;
+			}
+
+			$stmt->close();
+
+			return $key;
+		}
 	}
 	
 	//  Usage example:
 	//  api.php/generatedkeys/[id]
+	//  api.php/keycheck/[password]
 	//  api.php/post
 	//     Post fields required: "password=XX&startdate=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
 	
 	$request = explode('/', trim($_SERVER['PATH_INFO'] ?? '', '/'));
 	$table = preg_replace('/[^a-z0-9_]+/i', '', $request[0] ?? null);
-	$key = intval($request[1] ?? 0);
+	$key = $request[1] ?? 0;
 	
 	if ($table) {
 		if ($table == 'post') {
@@ -113,6 +135,8 @@
 			echo json_encode(array('success' => Database::CreateKeyCoursePair($courseid, $keyid) ? 'true' : 'false'));
 		} elseif ($table == 'generatedkeys' && $key > 0) {
 			echo json_encode(Database::GetKeyByID($key) ?? array('success' => 'false'));
+		} elseif ($table == 'keycheck') {
+			echo json_encode(array('success' => Database::IsPasswordValid($key) ? 'true' : 'false'));
 		} else {
 			echo json_encode(array('success' => 'false'));
 		}
