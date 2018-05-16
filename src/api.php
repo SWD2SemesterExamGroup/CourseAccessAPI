@@ -28,12 +28,12 @@
 			return self::$instance;
 		}
 
-		public static function CreateKey($password, $expiredate)
+		public static function CreateKey($password, $startdate, $expiredate)
 		{
 			$db = self::GetInstance();
-			$sql = "INSERT INTO `generatedkeys` (`GeneratedPassword`, `ExpirationTimeStamp`) VALUES (?, ?)";
+			$sql = "INSERT INTO `generatedkeys` (`GeneratedPassword`, `StartTimeStamp`, `ExpirationTimeStamp`) VALUES (?, ?, ?)";
 			$stmt = $db->prepare($sql);
-			$stmt->bind_param('ss', $password, $expiredate);
+			$stmt->bind_param('sss', $password, $startdate, $expiredate);
 			
 			$stmt->execute();
 			$insertid = $stmt->insert_id;
@@ -94,7 +94,7 @@
 	//  Usage example:
 	//  api.php/generatedkeys/[id]
 	//  api.php/post
-	//     Post fields required: "password=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
+	//     Post fields required: "password=XX&startdate=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
 	
 	$request = explode('/', trim($_SERVER['PATH_INFO'] ?? '', '/'));
 	$table = preg_replace('/[^a-z0-9_]+/i', '', $request[0] ?? null);
@@ -102,12 +102,12 @@
 	
 	if ($table) {
 		if ($table == 'post') {
-			if (!isset($_POST['password']) || !isset($_POST['expiredate']) || !isset($_POST['courseid']) || !isset($_POST['classid']) || !isset($_POST['teacherid'])) {
+			if (!isset($_POST['password']) || !isset($_POST['startdate']) || !isset($_POST['expiredate']) || !isset($_POST['courseid']) || !isset($_POST['classid']) || !isset($_POST['teacherid'])) {
 				echo json_encode(array('success' => 'false'));
 				exit;
 			}
 			
-			$keyid = Database::CreateKey($_POST['password'], $_POST['expiredate']);
+			$keyid = Database::CreateKey($_POST['password'], $_POST['startdate'], $_POST['expiredate']);
 			$courseid = Database::CreateCourse($_POST['courseid'], $_POST['classid'], $_POST['teacherid']);
 			
 			echo json_encode(array('success' => Database::CreateKeyCoursePair($courseid, $keyid) ? 'true' : 'false'));

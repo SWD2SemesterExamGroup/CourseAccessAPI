@@ -20,8 +20,9 @@ PHP Course Access RESTful API
 * http://localhost/api.php/generatedkeys/[id]
     * Example output: ```{"ID":1,"GeneratedPassword":"asfewwerdsf","StartTimeStamp":"2018-05-10 10:52:22","ExpirationTimeStamp":"2018-05-31 00:00:00"}```
 * http://localhost/api.php/post
-    * Required fields: "password=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
+    * Required fields: "password=XX&startdate=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
+    * cURL Example: ```curl.exe -d "password=thepass&startdate=2018-05-10&expiredate=2018-05-18&courseid=thecourse&classid=theclass&teacherid=theteacher" -X POST http://localhost/si-api/api.php/post```
     * Example output: ```{"success":"true"}```
 
 # Version
-- 0.0.1
+- 0.0.2
