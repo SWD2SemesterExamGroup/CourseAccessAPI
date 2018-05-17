@@ -19,7 +19,7 @@
 				$db = new mysqli(self::DB_HOST, self::DB_USERNAME, self::DB_PASSWORD, self::DB_DATABASE);
 				
 				if ($db->connect_error) {
-					die("Failed to connect to MySQL: (" . $db->connect_errno . ") " . $db->connect_error);
+					return null;
 				}
 
 				self::$instance = $db;
@@ -150,6 +150,18 @@
 				$ary['CourseID'] = $coursekey['CourseID'];
 			} else {
 				$ary['success'] = 'false';
+			}
+			
+			echo json_encode($ary);
+		} elseif ($table == 'health') {
+			
+			$ary['success'] = 'true';
+			$ary['db'] = 'true';
+			$ary['message'] = 'Both the service and database are running.';
+			
+			if (!Database::GetInstance()) {
+				$ary['db'] = 'false';
+				$ary['message'] = 'The service is running but the database is not.';
 			}
 			
 			echo json_encode($ary);
