@@ -93,14 +93,20 @@
 		public static function IsPasswordValid($password)
 		{
 			$db = self::GetInstance();
-			$sql = "SELECT `ID` FROM `generatedkeys` WHERE `GeneratedPassword` = ? AND NOW() BETWEEN `StartTimeStamp` AND `ExpirationTimeStamp`";
+			$sql = "SELECT `coursepasswords`.`CourseID`
+				FROM `generatedkeys`, `coursepasswords`, `gkcps`
+				WHERE `GeneratedPassword` = ? AND NOW() BETWEEN `StartTimeStamp` AND `ExpirationTimeStamp`
+				AND `gkcps`.`GKID` = `generatedkeys`.`ID`
+				AND `gkcps`.`CPID` = `coursepasswords`.`ID`
+				LIMIT 1";
+			
 			$key = null;
 
 			$stmt = $db->prepare($sql);
 			$stmt->bind_param('s', $password);
 
 			if ($stmt->execute()) {
-				$stmt->bind_result($key['ID']);
+				$stmt->bind_result($key['CourseID']);
 
 				if (!$stmt->fetch())
 					$key = null;
@@ -136,7 +142,17 @@
 		} elseif ($table == 'generatedkeys' && $key > 0) {
 			echo json_encode(Database::GetKeyByID($key) ?? array('success' => 'false'));
 		} elseif ($table == 'keycheck') {
-			echo json_encode(array('success' => Database::IsPasswordValid($key) ? 'true' : 'false'));
+			$ary = array();
+			$coursekey = Database::IsPasswordValid($key);
+			
+			if (isset($coursekey)) {
+				$ary['success'] = 'true';
+				$ary['CourseID'] = $coursekey['CourseID'];
+			} else {
+				$ary['success'] = 'false';
+			}
+			
+			echo json_encode($ary);
 		} else {
 			echo json_encode(array('success' => 'false'));
 		}

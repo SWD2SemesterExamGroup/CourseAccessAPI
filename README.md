@@ -21,7 +21,7 @@ PHP Course Access RESTful API
     * Example output: ```{"ID":1,"GeneratedPassword":"asfewwerdsf","StartTimeStamp":"2018-05-10 10:52:22","ExpirationTimeStamp":"2018-05-31 00:00:00"}```
 * http://localhost/api.php/keycheck/[password]
     * Determines if a key is valid and the current time is within the start/end usage period.
-    * Example output: ```{"success":"true"}```
+    * Example output: ```{"success":"true","CourseID":687}```
 * http://localhost/api.php/post
     * Required fields: "password=XX&startdate=XX&expiredate=XX&courseid=XX&classid=XX&teacherid=XX"
     * cURL Example: ```curl.exe -d "password=thepass&startdate=2018-05-10 08:00&expiredate=2018-05-18 16:00&courseid=12&classid=2&teacherid=21" -X POST http://localhost/si-api/api.php/post```
